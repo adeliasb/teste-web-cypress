@@ -33,8 +33,8 @@ jobs:
           pip install --upgrade --user awscli
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Fazer upload para S3
-        if: always() # mesmo que os testes falhem
+      - name: Upload de evidências para S3 (se houver)
+        if: always()
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -42,5 +42,17 @@ jobs:
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
         run: | 
           TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
-          aws s3 cp cypress/screenshots s3://$S3_BUCKET_NAME/cypress/$TIMESTAMP/screenshots/ --recursive
-          aws s3 cp cypress/videos s3://$S3_BUCKET_NAME/cypress/$TIMESTAMP/videos/ --recursive
+
+          if [ -d cypress/screenshots ]; then
+             echo "Enviando screenshots..."
+             aws s3 cp cypress/screenshots s3://$S3_BUCKET_NAME/cypress/$TIMESTAMP/screenshots/ --recursive
+          else
+             echo "Nenhuma screenshot encontrada."
+          fi
+
+          if [ -d cypress/videos ]; then
+             echo "Enviando vídeos..."
+             aws s3 cp cypress/videos s3://$S3_BUCKET_NAME/cypress/$TIMESTAMP/videos/ --recursive
+          else
+            echo "Nenhum vídeo encontrado."
+          fi
