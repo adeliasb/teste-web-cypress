@@ -28,8 +28,10 @@ jobs:
       - name: Rodar testes Cypress
         run: npx cypress run
 
-      - name: Instalar AWS CLI
-        run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" unzip awscliv2.zip sudo ./aws/install
+      - name: Instalar AWS CLI via pip
+        run: |
+          pip install --upgrade --user awscli
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Fazer upload para S3
         if: always() # mesmo que os testes falhem
