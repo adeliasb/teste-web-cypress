@@ -25,6 +25,14 @@ jobs:
       - name: Instalar binário do Cypress
         run: npx cypress install
 
+      - name: Instalar Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+
+      - name: Rodar testes Cypress no Chrome
+        run: npx cypress run --browser chrome
+
       - name: Rodar testes Cypress
         run: npx cypress run
 
